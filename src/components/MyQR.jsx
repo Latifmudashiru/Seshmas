@@ -24,7 +24,7 @@ export default function MyQR({ playerId, onLeave }) {
               value={`${window.location.origin}/?p=${playerId}`}
               size={256}
               marginSize={0}
-              fgColor="#0e0d0b"
+              fgColor="#000000"
               bgColor="#ffffff"
               style={{ width: '100%', height: 'auto', display: 'block' }}
             />

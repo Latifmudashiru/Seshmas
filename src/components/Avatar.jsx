@@ -16,8 +16,8 @@ function initials(name = '') {
   return (first + second).toUpperCase()
 }
 
-// Muted, distinct colours that hold white initials on the dark background.
-const PALETTE = ['#a24b3f', '#3f6f93', '#4f7a45', '#7a5aa0', '#2f7d78', '#a2476f', '#5d6577', '#96592c']
+// Solid, muted colours that pop on the dark red/black wash and hold white initials at AA contrast.
+const PALETTE = ['#1f7a6d', '#3b6fb0', '#7a4fa8', '#a63c78', '#a8661a', '#5b7f2e', '#1f6f8b', '#b0405a']
 
 function colour(id = '') {
   return PALETTE[hash(String(id)) % PALETTE.length]
