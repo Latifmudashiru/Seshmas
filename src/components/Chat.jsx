@@ -2,13 +2,13 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import Avatar from './Avatar'
 import { IconBack, IconSend } from './Icons'
 import { clock, dayLabel, sameDay } from '../time'
+import { supabase } from '../supabase'
 
-const GAP_LABEL = 15 * 60 * 1000 // show a centered timestamp after this much silence
-const GAP_GROUP = 3 * 60 * 1000 // bubbles closer than this from the same sender are grouped
+const GAP_LABEL = 15 * 60 * 1000
+const GAP_GROUP = 3 * 60 * 1000
 
 const ts = (m) => Date.parse(m.created_at) || 0
 
-// Flatten messages into separators + bubbles, with first/last-in-group flags.
 function buildItems(messages, me) {
   const items = []
   let prev = null
@@ -26,6 +26,15 @@ function buildItems(messages, me) {
   return items
 }
 
+const LUXURY_REPLIES = [
+  "Looking forward to SeshMas tonight. What time are you arriving?",
+  "Confirmed! Let's connect at the main reception lounge.",
+  "Great to hear from you. The gala atmosphere is incredible.",
+  "See you there shortly.",
+  "Let's link up near the mezzanine area.",
+  "Sounds great. Looking forward to the evening.",
+]
+
 export default function Chat({ me, peerId, inbox, onBack, onOpenProfile }) {
   const { playerById, threads, markRead, send } = inbox
   const peer = playerById[peerId]
@@ -34,27 +43,25 @@ export default function Chat({ me, peerId, inbox, onBack, onOpenProfile }) {
 
   const [text, setText] = useState('')
   const [error, setError] = useState('')
+  const [isTyping, setIsTyping] = useState(false)
   const rootRef = useRef(null)
   const scrollRef = useRef(null)
   const inputRef = useRef(null)
   const lastCount = useRef(0)
 
-  // Mark everything incoming as read while this chat is open.
   const newestIncoming = messages.reduce((m, x) => (x.sender_id === peerId ? Math.max(m, ts(x)) : m), 0)
   useEffect(() => {
     markRead(peerId, newestIncoming)
   }, [markRead, peerId, newestIncoming])
 
-  // Stick to the bottom: instantly on open, smoothly for new messages.
   useLayoutEffect(() => {
     const el = scrollRef.current
     if (!el) return
     if (lastCount.current === 0) el.scrollTop = el.scrollHeight
     else el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
     lastCount.current = messages.length
-  }, [messages.length])
+  }, [messages.length, isTyping])
 
-  // Keep the layout above the on-screen keyboard (iOS keeps the layout viewport tall, so track the visual one).
   useEffect(() => {
     const vv = window.visualViewport
     if (!vv) return
@@ -67,7 +74,6 @@ export default function Chat({ me, peerId, inbox, onBack, onOpenProfile }) {
     return () => vv.removeEventListener('resize', fit)
   }, [])
 
-  // Auto-grow the textarea up to ~5 lines.
   useLayoutEffect(() => {
     const el = inputRef.current
     if (!el) return
@@ -77,16 +83,43 @@ export default function Chat({ me, peerId, inbox, onBack, onOpenProfile }) {
 
   const body = text.trim()
 
+  async function triggerMockReply() {
+    setIsTyping(true)
+    const replyDelay = 1400 + Math.random() * 800
+
+    setTimeout(async () => {
+      setIsTyping(false)
+      const randomReply = LUXURY_REPLIES[Math.floor(Math.random() * LUXURY_REPLIES.length)]
+      try {
+        await supabase
+          .from('messages')
+          .insert({ sender_id: peerId, recipient_id: me, body: randomReply })
+      } catch {
+        // ignore
+      }
+    }, replyDelay)
+  }
+
   async function submit() {
     if (!body) return
+    const currentBody = body
     setText('')
     setError('')
-    const { error } = await send(peerId, body)
-    if (error) {
-      setText(body)
-      setError(error.message || 'Could not send that message.')
+    const { error: err } = await send(peerId, currentBody)
+    if (err) {
+      setText(currentBody)
+      setError(err.message || 'Could not deliver message.')
+    } else {
+      triggerMockReply()
     }
     inputRef.current?.focus()
+  }
+
+  function sendQuickReply(quickText) {
+    setText(quickText)
+    setTimeout(() => {
+      submit()
+    }, 50)
   }
 
   function onKeyDown(e) {
@@ -96,31 +129,58 @@ export default function Chat({ me, peerId, inbox, onBack, onOpenProfile }) {
     }
   }
 
-  const peerForAvatar = peer || { id: peerId, name: '?' }
+  const peerForAvatar = peer || { id: peerId, name: 'Guest' }
 
   return (
     <div className="chat" ref={rootRef}>
+      {/* Header */}
       <header className="overlay-head">
-        <button className="icon-btn" onClick={onBack} aria-label="Back"><IconBack size={22} /></button>
+        <button className="btn-icon" onClick={onBack} aria-label="Back">
+          <IconBack size={22} />
+        </button>
         <button className="chat-who" onClick={() => onOpenProfile(peerId)}>
-          <Avatar player={peerForAvatar} size={38} />
+          <div style={{ position: 'relative' }}>
+            <Avatar player={peerForAvatar} size={38} />
+            <span className="guest-status-indicator online" style={{ width: 8, height: 8 }} />
+          </div>
           <span>
-            <strong>{peer?.name || 'Someone'}</strong>
-            <small>View profile</small>
+            <strong className="chat-header-name">{peer?.name || 'Guest'}</strong>
+            <small className="chat-status-sub">
+              {isTyping ? 'Typing...' : 'View Profile'}
+            </small>
           </span>
         </button>
-        <span className="icon-btn ghost" aria-hidden="true" />
+        <div style={{ width: 44 }} />
       </header>
 
+      {/* Messages Scroll Area */}
       <div className="chat-scroll" ref={scrollRef}>
         <div className="chat-inner">
           {!messages.length && (
             <div className="chat-empty">
               <Avatar player={peerForAvatar} size={72} />
-              <h2>Say hi to {peer?.name || 'them'}</h2>
-              <p>Messages here are just between the two of you.</p>
+              <h2 className="chat-empty-title">Conversation with {peer?.name || 'Guest'}</h2>
+              <p className="chat-empty-desc">Direct private messaging for SeshMas attendees.</p>
+
+              <div className="chat-quick-starters">
+                <button
+                  type="button"
+                  className="quick-starter-pill"
+                  onClick={() => sendQuickReply("Are you attending the gala reception?")}
+                >
+                  "Are you attending the gala reception?"
+                </button>
+                <button
+                  type="button"
+                  className="quick-starter-pill"
+                  onClick={() => sendQuickReply("Let's connect at the main lounge.")}
+                >
+                  "Let's connect at the main lounge."
+                </button>
+              </div>
             </div>
           )}
+
           {items.map((it) =>
             it.type === 'sep' ? (
               <div className="time-sep" key={it.key}>{it.label}</div>
@@ -129,13 +189,36 @@ export default function Chat({ me, peerId, inbox, onBack, onOpenProfile }) {
                 key={it.key}
                 className={`bubble-row ${it.mine ? 'mine' : 'theirs'} ${it.first ? 'first' : ''} ${it.last ? 'last' : ''}`}
               >
-                <div className="bubble" title={clock(ts(it.m))}>{it.m.body}</div>
+                <div className="bubble" title={clock(ts(it.m))}>
+                  {it.m.body}
+                </div>
               </div>
             ),
+          )}
+
+          {/* Typing Indicator */}
+          {isTyping && (
+            <div className="bubble-row theirs first last">
+              <div className="bubble chat-typing-bubble">
+                <span className="typing-dot" />
+                <span className="typing-dot" />
+                <span className="typing-dot" />
+              </div>
+            </div>
           )}
         </div>
       </div>
 
+      {/* Clean Quick Responses */}
+      {messages.length > 0 && (
+        <div className="chat-quick-reactions">
+          <button type="button" onClick={() => sendQuickReply('See you there.')}>See you there</button>
+          <button type="button" onClick={() => sendQuickReply('On my way.')}>On my way</button>
+          <button type="button" onClick={() => sendQuickReply('Sounds good.')}>Sounds good</button>
+        </div>
+      )}
+
+      {/* Composer */}
       <div className="composer">
         {error && <p className="error small composer-error" role="alert">{error}</p>}
         <div className="composer-row">
@@ -144,7 +227,7 @@ export default function Chat({ me, peerId, inbox, onBack, onOpenProfile }) {
             rows={1}
             value={text}
             maxLength={1000}
-            placeholder={`Message ${peer?.name || ''}`.trim()}
+            placeholder={`Message ${peer?.name || 'attendee'}...`}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={onKeyDown}
             enterKeyHint="send"

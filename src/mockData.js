@@ -1,0 +1,125 @@
+// Mock data for frontend SeshMas experience
+
+export const MOCK_PARTY_CODE = 'SESHMAS24'
+
+export const MOCK_PARTY = {
+  id: 'party-001',
+  name: 'SeshMas Gala',
+  host: 'PGLA',
+  date: '12th December',
+  time: '2PM – 10PM',
+  location: 'Private Residence · Mayfair',
+  dressCode: 'Festive & Cozy Holiday Attire',
+  maxCapacity: 40,
+  currentGuests: 24,
+}
+
+export const INITIAL_TEAMS = [
+  {
+    id: 'team-hennessy',
+    name: 'Team Hennessy',
+    tagline: 'Bold, Smooth & Relentless',
+    color: '#DDA83A',
+    bgBadge: 'rgba(221, 168, 58, 0.15)',
+    borderBadge: 'rgba(221, 168, 58, 0.35)',
+    maxMembers: 6,
+    bonusPoints: 12,
+  },
+  {
+    id: 'team-moet',
+    name: 'Team Moët',
+    tagline: 'Champagne Taste & Golden Energy',
+    color: '#F4DB8D',
+    bgBadge: 'rgba(244, 219, 141, 0.15)',
+    borderBadge: 'rgba(244, 219, 141, 0.35)',
+    maxMembers: 6,
+    bonusPoints: 8,
+  },
+  {
+    id: 'team-bad-santas',
+    name: 'Team Bad Santas',
+    tagline: 'Always on the Naughty List',
+    color: '#E63946',
+    bgBadge: 'rgba(230, 57, 70, 0.15)',
+    borderBadge: 'rgba(230, 57, 70, 0.35)',
+    maxMembers: 6,
+    bonusPoints: 10,
+  },
+  {
+    id: 'team-mistletoe',
+    name: 'Team Mistletoe',
+    tagline: 'Silent Night, Deadly Strategy',
+    color: '#2ED573',
+    bgBadge: 'rgba(46, 213, 115, 0.15)',
+    borderBadge: 'rgba(46, 213, 115, 0.35)',
+    maxMembers: 6,
+    bonusPoints: 6,
+  },
+]
+
+export const GAMES_TIMELINE = [
+  {
+    id: 'g1',
+    round: 'ROUND 01',
+    title: 'Beer Pong & Cup Flip',
+    type: 'Team Duel',
+    points: 10,
+    status: 'completed',
+    winner: 'Team Hennessy',
+    forfeitsCount: 3,
+    note: 'Team Moët claimed 2 shot forfeits (+4 pts).',
+  },
+  {
+    id: 'g2',
+    round: 'ROUND 02',
+    title: 'SeshMas Trivia & Hot Seat',
+    type: 'Interactive Trivia',
+    points: 15,
+    status: 'live',
+    winner: null,
+    forfeitsCount: 1,
+    note: 'Live now! Dedicated drinkers on standby for wrong answers.',
+  },
+  {
+    id: 'g3',
+    round: 'ROUND 03',
+    title: 'Blind Holiday Drink Tasting',
+    type: 'Taste Challenge',
+    points: 12,
+    status: 'upcoming',
+    scheduledTime: '20:30',
+    winner: null,
+    forfeitsCount: 0,
+    note: 'Guess 3 holiday mixes correctly without looking.',
+  },
+  {
+    id: 'g4',
+    round: 'ROUND 04',
+    title: 'Dance-Off & Musical Chairs',
+    type: 'Rhythm Battle',
+    points: 15,
+    status: 'upcoming',
+    scheduledTime: '21:15',
+    winner: null,
+    forfeitsCount: 0,
+    note: 'Judged live by PGLA.',
+  },
+  {
+    id: 'g5',
+    round: 'ROUND 05',
+    title: 'The SeshMas Grand Finale',
+    type: 'All-Hands Final',
+    points: 25,
+    status: 'upcoming',
+    scheduledTime: '22:00',
+    winner: null,
+    forfeitsCount: 0,
+    note: 'Double points round with double forfeits.',
+  },
+]
+
+export const INITIAL_FORFEITS = [
+  { id: 'f1', playerName: 'Marcus', teamName: 'Team Moët', round: 'Round 1', pointsGained: 2, timestamp: '10m ago' },
+  { id: 'f2', playerName: 'Jordan', teamName: 'Team Bad Santas', round: 'Round 1', pointsGained: 2, timestamp: '14m ago' },
+  { id: 'f3', playerName: 'Ama', teamName: 'Team Hennessy', round: 'Warmup', pointsGained: 2, timestamp: '25m ago' },
+]

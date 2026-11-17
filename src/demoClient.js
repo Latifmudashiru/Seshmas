@@ -63,12 +63,21 @@ function seed() {
     { name: 'Tolu', snapchat: 'tolu.b', instagram: 'tolu_b', tiktok: 'tolub' },
     { name: 'Sam', snapchat: 'samthesnowman', instagram: null, tiktok: null },
   ]
+  const teams = [
+    { id: 'team-hennessy', name: 'Team Hennessy', color: '#DDA83A', max_members: 6, drinker_id: null },
+    { id: 'team-moet', name: 'Team Moët', color: '#F4DB8D', max_members: 6, drinker_id: null },
+    { id: 'team-bad-santas', name: 'Team Bad Santas', color: '#E63946', max_members: 6, drinker_id: null },
+    { id: 'team-mistletoe', name: 'Team Mistletoe', color: '#2ED573', max_members: 6, drinker_id: null },
+  ]
+  const teamIds = ['team-hennessy', 'team-moet', 'team-bad-santas', 'team-mistletoe', 'team-hennessy']
   const players = people.map((p, i) => ({
     id: crypto.randomUUID(),
     ...p,
-    team_id: null,
+    team_id: teamIds[i % teamIds.length],
     created_at: new Date(now - (people.length - i) * 60000).toISOString(),
   }))
+  if (players[0]) teams[0].drinker_id = players[0].id
+  if (players[1]) teams[1].drinker_id = players[1].id
   const grid = [[1, 5, 1], [5, 1], [1, 1, 1, 5], [5, 5, 1], [1]]
   const scores = []
   players.forEach((p, i) => {
@@ -84,7 +93,7 @@ function seed() {
   })
   save('players', players)
   save('scores', scores)
-  save('teams', [])
+  save('teams', teams)
   save('messages', [])
 }
 
@@ -149,6 +158,13 @@ class Builder {
 
   insert(payload) {
     this.action = 'insert'
+    this.payload = payload
+    this.returning = false
+    return this
+  }
+
+  update(payload) {
+    this.action = 'update'
     this.payload = payload
     this.returning = false
     return this
@@ -243,6 +259,16 @@ class Builder {
       save(table, [...all, ...incoming])
       changed = true
       result = incoming
+    } else if (this.action === 'update') {
+      const updated = all.map((r) => {
+        if (match(r)) {
+          changed = true
+          return { ...r, ...this.payload }
+        }
+        return r
+      })
+      save(table, updated)
+      result = updated.filter(match)
     } else if (this.action === 'delete') {
       const removed = all.filter(match)
       save(table, all.filter((r) => !match(r)))

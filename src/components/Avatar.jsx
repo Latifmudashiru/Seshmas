@@ -25,6 +25,43 @@ function colour(id = '') {
 
 export default function Avatar({ player, size = 44, className = '' }) {
   const name = player?.name || ''
+  const photo = player?.photo || player?.avatar_url
+
+  if (photo) {
+    return (
+      <span
+        className={`avatar avatar-has-photo ${className}`.trim()}
+        style={{
+          '--size': `${size}px`,
+          width: `${size}px`,
+          height: `${size}px`,
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+          borderRadius: '50%',
+          overflow: 'hidden',
+          border: '1.5px solid rgba(221, 168, 58, 0.65)',
+          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
+          flexShrink: 0,
+          background: 'rgba(0, 0, 0, 0.4)',
+        }}
+        aria-hidden="true"
+      >
+        <img
+          src={photo}
+          alt={name}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block',
+          }}
+        />
+      </span>
+    )
+  }
+
   return (
     <span
       className={`avatar ${className}`.trim()}
