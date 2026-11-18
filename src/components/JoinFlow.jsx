@@ -5,6 +5,71 @@ import { MOCK_PARTY_CODE } from '../mockData'
 import { supabase, PARTY_CODE, DEMO_MODE } from '../supabase'
 import { IconInstagram, IconCamera, IconCheck, IconBack } from './Icons'
 
+function ChristmasWreathDecoration() {
+  return (
+    <svg
+      className="festive-wreath-svg"
+      viewBox="0 0 160 160"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Outer Garland / Twinkle Ring */}
+      <circle cx="80" cy="80" r="56" stroke="url(#goldWreathGrad)" strokeWidth="2.5" strokeDasharray="3 4" opacity="0.9" />
+      <circle cx="80" cy="80" r="61" stroke="rgba(221, 168, 58, 0.35)" strokeWidth="1" />
+
+      {/* Top Winter Holly & Berries */}
+      <g className="wreath-holly-top" transform="translate(80, 15)">
+        {/* Left leaf */}
+        <path d="M0,0 C-12,-8 -16,-2 -14,6 C-10,10 -4,8 0,4 Z" fill="#1C5D38" stroke="#0D331E" strokeWidth="0.8" />
+        <path d="M0,0 C-6,-2 -10,2 -8,4" stroke="#48B875" strokeWidth="0.7" fill="none" />
+        {/* Right leaf */}
+        <path d="M0,0 C12,-8 16,-2 14,6 C10,10 4,8 0,4 Z" fill="#1E653D" stroke="#0D331E" strokeWidth="0.8" />
+        <path d="M0,0 C6,-2 10,2 8,4" stroke="#48B875" strokeWidth="0.7" fill="none" />
+        {/* Red Berries */}
+        <circle cx="-4" cy="5" r="4" fill="#D90429" stroke="#5E000D" strokeWidth="0.8" />
+        <circle cx="-5" cy="3.5" r="1.2" fill="#FFA5B2" />
+        <circle cx="4" cy="5" r="4" fill="#EF233C" stroke="#5E000D" strokeWidth="0.8" />
+        <circle cx="3" cy="3.5" r="1.2" fill="#FFA5B2" />
+        <circle cx="0" cy="8" r="4.2" fill="#BA181B" stroke="#5E000D" strokeWidth="0.8" />
+        <circle cx="-1" cy="6.5" r="1.2" fill="#FFA5B2" />
+      </g>
+
+      {/* Festive Gold Sparkles */}
+      <path d="M22,48 L24,40 L32,38 L24,36 L22,28 L20,36 L12,38 L20,40 Z" fill="#F4DB8D" opacity="0.95" />
+      <path d="M138,48 L140,40 L148,38 L140,36 L138,28 L136,36 L128,38 L136,40 Z" fill="#F4DB8D" opacity="0.95" />
+      <path d="M24,116 L26,110 L32,108 L26,106 L24,100 L22,106 L16,108 L22,110 Z" fill="#DDA83A" opacity="0.85" />
+      <path d="M136,116 L138,110 L144,108 L138,106 L136,100 L134,106 L128,108 L134,110 Z" fill="#DDA83A" opacity="0.85" />
+
+      {/* Golden & Crimson Christmas Baubles */}
+      <circle cx="32" cy="78" r="3.6" fill="url(#goldBaubleGrad)" />
+      <circle cx="128" cy="78" r="3.6" fill="url(#goldBaubleGrad)" />
+      <circle cx="46" cy="136" r="3" fill="#D90429" />
+      <circle cx="114" cy="136" r="3" fill="#DDA83A" />
+
+      {/* Twinkling Fairy Lights */}
+      <circle cx="40" cy="32" r="2.2" fill="#FFF8E7" className="wreath-light-pulse-1" />
+      <circle cx="120" cy="32" r="2.2" fill="#FFF8E7" className="wreath-light-pulse-2" />
+      <circle cx="134" cy="92" r="2.2" fill="#FFD166" className="wreath-light-pulse-3" />
+      <circle cx="26" cy="92" r="2.2" fill="#FFD166" className="wreath-light-pulse-2" />
+      <circle cx="80" cy="148" r="2.5" fill="#EF233C" opacity="0.85" />
+
+      <defs>
+        <linearGradient id="goldWreathGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFF2B2" />
+          <stop offset="50%" stopColor="#DDA83A" />
+          <stop offset="100%" stopColor="#8A5A1A" />
+        </linearGradient>
+        <radialGradient id="goldBaubleGrad" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stopColor="#FFF7CC" />
+          <stop offset="40%" stopColor="#DDA83A" />
+          <stop offset="100%" stopColor="#6E450E" />
+        </radialGradient>
+      </defs>
+    </svg>
+  )
+}
+
 export default function JoinFlow({ onJoined }) {
   // Step 1: 'code' | Step 2: 'profile'
   const [currentStep, setCurrentStep] = useState('code')
@@ -302,36 +367,48 @@ export default function JoinFlow({ onJoined }) {
 
                 <div className="selfie-capture-wrapper">
                   {selfie ? (
-                    <div className="selfie-preview-box">
-                      <div className="selfie-preview-frame">
-                        <img src={selfie} alt="Selfie preview" className="selfie-img" />
-                        <span className="selfie-verified-pill">
-                          <IconCheck size={12} /> Verified
-                        </span>
+                    <div className="selfie-preview-box centered">
+                      <div className="selfie-festive-wreath-wrap">
+                        <ChristmasWreathDecoration />
+                        <div className="selfie-preview-container">
+                          <div className="selfie-preview-frame">
+                            <img src={selfie} alt="Selfie preview" className="selfie-img" />
+                          </div>
+                          <span className="selfie-verified-circle" title="Verified">
+                            <IconCheck size={11} />
+                          </span>
+                        </div>
                       </div>
-                      <div className="selfie-action-info">
-                        <strong className="selfie-ready-text">Selfie captured!</strong>
+                      <div className="selfie-action-info centered">
+                        <strong className="selfie-ready-text">SELFIE CAPTURED</strong>
                         <button
                           type="button"
                           className="btn-retake-selfie"
                           onClick={() => fileInputRef.current?.click()}
                         >
-                          <IconCamera size={14} /> Retake Photo
+                          <IconCamera size={12} /> Retake Photo
                         </button>
                       </div>
                     </div>
                   ) : (
                     <div
-                      className="selfie-placeholder-box"
+                      className="selfie-placeholder-box festive"
                       onClick={() => fileInputRef.current?.click()}
                       role="button"
                       tabIndex={0}
                     >
+                      <div className="placeholder-festive-stars">
+                        <span>✦</span>
+                        <span>✦</span>
+                      </div>
                       <div className="selfie-cam-ring">
                         <IconCamera size={28} />
                       </div>
-                      <strong className="selfie-cta-title">Tap to Take Selfie</strong>
+                      <strong className="selfie-cta-title">Tap to Take Party Selfie</strong>
                       <span className="selfie-cta-sub">Opens your front camera instantly</span>
+                      <div className="placeholder-holiday-tag">
+                        <span>🎄 Holiday VIP Photo Pass</span>
+                      </div>
                     </div>
                   )}
 
@@ -371,9 +448,6 @@ export default function JoinFlow({ onJoined }) {
                     </div>
                   </div>
                 </div>
-                <span className="instagram-hint-text">
-                  Generates direct link: https://www.instagram.com/{instagram ? normalizeHandle(instagram) : 'username'}/?hl=en
-                </span>
               </div>
 
               {/* Error Message */}

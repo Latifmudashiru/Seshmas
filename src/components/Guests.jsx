@@ -5,7 +5,7 @@ import Avatar from './Avatar'
 import TeamModal from './TeamModal'
 import { IconSearch, IconChat, IconTeams, IconShot, IconCheck } from './Icons'
 
-export default function Guests({ playerId, onOpenProfile, onOpenChat, teamsState }) {
+export default function Guests({ playerId, onOpenProfile, teamsState }) {
   const { ranked, loaded } = useStandings()
   const { teams = [], myTeam, me, joinTeam } = teamsState || {}
 
@@ -363,17 +363,8 @@ export default function Guests({ playerId, onOpenProfile, onOpenChat, teamsState
                     </div>
                   </div>
 
-                  <div className="guest-card-actions" onClick={(e) => e.stopPropagation()}>
-                    {!isMe && (
-                      <button
-                        type="button"
-                        className="guest-msg-btn"
-                        onClick={() => onOpenChat(p.id)}
-                        aria-label={`Message ${p.name}`}
-                      >
-                        <IconChat size={16} />
-                      </button>
-                    )}
+                  <div className="guest-card-actions">
+                    <span className="guest-card-arrow">→</span>
                   </div>
                 </motion.div>
               )

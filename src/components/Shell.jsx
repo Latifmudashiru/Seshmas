@@ -5,7 +5,6 @@ import { useTeams } from '../useTeams'
 import Dashboard from './Dashboard'
 import Guests from './Guests'
 import Leaderboard from './Leaderboard'
-import Chat from './Chat'
 import MyQR from './MyQR'
 import Profile from './Profile'
 import LiveDot from './LiveDot'
@@ -81,14 +80,6 @@ export default function Shell({ playerId, onLeave, initialProfile }) {
 
   const openProfile = (id) => push({ type: 'profile', id })
 
-  function openChat(id) {
-    const below = stack[stack.length - 2]
-    if (top?.type === 'chat' && top.id === id) return
-    if (top?.type === 'profile' && below?.type === 'chat' && below.id === id) return back()
-    if (top?.type === 'profile') return replaceTop({ type: 'chat', id })
-    push({ type: 'chat', id })
-  }
-
   return (
     <div className="shell">
       {/* Top Header - Pure writing branding */}
@@ -118,7 +109,6 @@ export default function Shell({ playerId, onLeave, initialProfile }) {
           <Guests
             playerId={playerId}
             onOpenProfile={openProfile}
-            onOpenChat={openChat}
             teamsState={teamsState}
           />
         )}
@@ -167,12 +157,8 @@ export default function Shell({ playerId, onLeave, initialProfile }) {
               playerId={top.id}
               viewerId={playerId}
               onBack={back}
-              onMessage={openChat}
               teamsState={teamsState}
             />
-          )}
-          {top.type === 'chat' && (
-            <Chat me={playerId} peerId={top.id} inbox={inbox} onBack={back} onOpenProfile={openProfile} />
           )}
         </div>
       )}

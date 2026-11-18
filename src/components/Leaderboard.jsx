@@ -1,23 +1,13 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { supabase } from '../supabase'
 import { useStandings } from '../useStandings'
-import { GAMES_TIMELINE, INITIAL_FORFEITS } from '../mockData'
+import { GAMES_TIMELINE } from '../mockData'
 import Avatar from './Avatar'
-import { IconShot, IconTrophy } from './Icons'
+import { IconTrophy } from './Icons'
 
 function Score({ value }) {
-  const prev = useRef(value)
-  const [flash, setFlash] = useState(0)
-  useEffect(() => {
-    if (prev.current !== value) {
-      prev.current = value
-      setFlash((f) => f + 1)
-    }
-  }, [value])
   return (
-    <span key={flash} className={`score ${flash ? 'bump' : ''}`}>
-      {value}
-    </span>
+    <span className="score">{value}</span>
   )
 }
 
@@ -26,45 +16,14 @@ const ROMAN_NUMERALS = ['I', 'II', 'III']
 
 export default function Leaderboard({ onOpenProfile, teamsState, playerId }) {
   const { ranked, loaded } = useStandings()
-  const [activeSubTab, setActiveSubTab] = useState('timeline') // 'timeline' | 'forfeits' | 'standings'
-  const [forfeitsLog, setForfeitsLog] = useState(INITIAL_FORFEITS)
-  const [shotPouring, setShotPouring] = useState(false)
+  const [activeSubTab, setActiveSubTab] = useState('timeline') // 'timeline' | 'standings'
   const [notice, setNotice] = useState('')
 
   const myTeam = teamsState?.myTeam
-  const claimForfeitShot = teamsState?.claimForfeitShot
 
   // Individual and Team scores
   const addPoints = async (pid, points) => {
     await supabase.from('scores').insert({ player_id: pid, points })
-  }
-
-  async function handleTakeShotForfeit() {
-    if (!playerId) return
-    setShotPouring(true)
-
-    if (claimForfeitShot) {
-      await claimForfeitShot('Shot Redemption')
-    } else {
-      await addPoints(playerId, 2)
-    }
-
-    const currentMe = ranked.find((p) => p.id === playerId) || { name: 'You' }
-    const newLog = {
-      id: 'f-' + Date.now(),
-      playerName: currentMe.name,
-      teamName: myTeam?.name || 'Independent',
-      round: 'Live Round',
-      pointsGained: 2,
-      timestamp: 'Just now',
-    }
-    setForfeitsLog([newLog, ...forfeitsLog])
-
-    setTimeout(() => {
-      setShotPouring(false)
-      setNotice('Shot forfeit validated. +2 Points granted.')
-      setTimeout(() => setNotice(''), 3000)
-    }, 700)
   }
 
   async function resetAll() {
@@ -79,12 +38,12 @@ export default function Leaderboard({ onOpenProfile, teamsState, playerId }) {
     <section className="screen">
       <header className="screen-head">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h1 className="screen-title-serif">Games & Standings</h1>
+          <h1 className="screen-title-serif">Tournament Games</h1>
           <span className="live on" style={{ fontSize: '11px', letterSpacing: '0.06em' }}>
             <i className="live-dot" /> LIVE ROUND 02
           </span>
         </div>
-        <p>Party timeline, team forfeits, and live scores.</p>
+        <p>Party timeline, round schedule, and live standings.</p>
       </header>
 
       {/* Sub Navigation Bar */}
@@ -94,21 +53,14 @@ export default function Leaderboard({ onOpenProfile, teamsState, playerId }) {
           className={`games-subnav-btn ${activeSubTab === 'timeline' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('timeline')}
         >
-          Timeline
-        </button>
-        <button
-          type="button"
-          className={`games-subnav-btn ${activeSubTab === 'forfeits' ? 'active' : ''}`}
-          onClick={() => setActiveSubTab('forfeits')}
-        >
-          Forfeits & Shots
+          Game Timeline
         </button>
         <button
           type="button"
           className={`games-subnav-btn ${activeSubTab === 'standings' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('standings')}
         >
-          Leaderboard
+          Leaderboard Standings
         </button>
       </div>
 
@@ -176,75 +128,7 @@ export default function Leaderboard({ onOpenProfile, teamsState, playerId }) {
         </div>
       )}
 
-      {/* 2. FORFEITS & SHOTS REDEMPTION */}
-      {activeSubTab === 'forfeits' && (
-        <div className="forfeits-screen-container">
-          {/* Main Forfeit Shot Claim Card */}
-          <div className="forfeit-hero-card luxury-card">
-            <div className="forfeit-hero-badge">
-              <IconShot size={18} />
-              <span>SHOT FORFEIT CLAUSE</span>
-            </div>
-            <h2 className="forfeit-hero-title">Redeem Lost Points</h2>
-            <p className="forfeit-hero-body">
-              Lost a round? Any member—or your team's Dedicated Drinker—can take a full shot of Hennessy or Tequila to claw back <strong>+2 points</strong> for your team.
-            </p>
-
-            <button
-              type="button"
-              className={`btn-luxury-gold ${shotPouring ? 'pouring' : ''}`}
-              onClick={handleTakeShotForfeit}
-              disabled={shotPouring}
-            >
-              <IconShot size={18} />
-              <span>{shotPouring ? 'VALIDATING SHOT...' : 'CLAIM SHOT FORFEIT (+2 PTS)'}</span>
-            </button>
-            <span className="forfeit-disclaimer">
-              Points automatically sync to your individual and team score.
-            </span>
-          </div>
-
-          {/* Dedicated Team Drinker Rules Card */}
-          <div className="drinker-rules-card luxury-card">
-            <h3 className="drinker-rules-heading">Designated Drinker Rules</h3>
-            <div className="drinker-rules-list">
-              <div className="rule-item">
-                <span className="rule-num">1</span>
-                <span>Each team selects 1 Dedicated Drinker for up to 3 consecutive rounds.</span>
-              </div>
-              <div className="rule-item">
-                <span className="rule-num">2</span>
-                <span>The Designated Drinker can drink on behalf of any teammate to save them from penalties.</span>
-              </div>
-              <div className="rule-item">
-                <span className="rule-num">3</span>
-                <span>Max 3 forfeit shots per team per game round. Drink responsibly.</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Live Forfeits Log */}
-          <div className="forfeits-log-section">
-            <h3 className="forfeits-log-title">Recent Shots Taken Tonight</h3>
-            <div className="forfeits-log-list">
-              {forfeitsLog.map((f) => (
-                <div key={f.id} className="forfeit-log-item luxury-card">
-                  <div className="forfeit-log-who">
-                    <strong>{f.playerName}</strong>
-                    <span className="text-gold">({f.teamName})</span>
-                  </div>
-                  <div className="forfeit-log-right">
-                    <span className="forfeit-pts-badge">+{f.pointsGained} PTS</span>
-                    <time className="forfeit-time">{f.timestamp}</time>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 3. LEADERBOARD STANDINGS */}
+      {/* 2. LEADERBOARD STANDINGS */}
       {activeSubTab === 'standings' && (
         <div className="standings-screen-container">
           {/* Team Standings Highlights */}

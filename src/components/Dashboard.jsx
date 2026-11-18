@@ -15,10 +15,6 @@ export default function Dashboard({ guestName, guestCount, onlineCount, onNaviga
       >
         <div className="dash-hero-meta-bar">
           <span className="brand-presents-text">PGLA PRESENTS</span>
-          <span className="live-status-pill">
-            <span className="status-dot-pulse" />
-            LIVE IN THE HOUSE
-          </span>
         </div>
 
         <div className="dash-hero-title-block">
@@ -29,8 +25,8 @@ export default function Dashboard({ guestName, guestCount, onlineCount, onNaviga
         {/* Live Party Status Banner */}
         <div className="dash-party-live-status">
           <div className="live-status-item">
-            <span className="live-status-lbl">CURRENT ROUND</span>
-            <strong className="live-status-val text-gold">Round 02 · Trivia</strong>
+            <span className="live-status-lbl">GAME</span>
+            <strong className="live-status-val text-gold">Christmas Trivia</strong>
           </div>
           <div className="meta-divider-vertical" />
           <div className="live-status-item">
@@ -125,7 +121,7 @@ export default function Dashboard({ guestName, guestCount, onlineCount, onNaviga
             <div>
               <strong style={{ fontSize: '15px', color: 'var(--gold-light)' }}>Join a SeshMas Team</strong>
               <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: 2 }}>
-                Pick an alliance to play games, compete, and claim drink forfeits.
+                Pick an alliance to play tournament games and compete for the crown.
               </p>
             </div>
             <span className="btn-luxury-outline" style={{ flex: 'none' }}>Choose Team →</span>
@@ -133,34 +129,7 @@ export default function Dashboard({ guestName, guestCount, onlineCount, onNaviga
         )}
       </div>
 
-      {/* SECTION 4: Interactive Forfeits & Games Shortcut */}
-      <div className="dash-section-wrap">
-        <div className="section-title-row">
-          <h2 className="dash-section-title">Games & Forfeits</h2>
-        </div>
-
-        <div className="dash-forfeit-banner luxury-card">
-          <div className="forfeit-banner-content">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span className="drinker-icon-wrap"><IconShot size={15} /></span>
-              <strong style={{ fontSize: '14px', color: 'var(--text-primary)' }}>Shot Forfeit Clause</strong>
-            </div>
-            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: 4 }}>
-              Lost a round? Anyone or your Dedicated Drinker can take a shot to redeem +2 points!
-            </p>
-          </div>
-          <button
-            type="button"
-            className="btn-luxury-gold"
-            onClick={() => onNavigate('board')}
-            style={{ minHeight: '40px', fontSize: '12px', padding: '0 16px' }}
-          >
-            VIEW GAMES & FORFEITS →
-          </button>
-        </div>
-      </div>
-
-      {/* SECTION 5: Directory & Navigation Hub */}
+      {/* SECTION 4: Directory & Navigation Hub */}
       <div className="dash-section-wrap">
         <div className="section-title-row">
           <h2 className="dash-section-title">Quick Actions</h2>
@@ -192,8 +161,8 @@ export default function Dashboard({ guestName, guestCount, onlineCount, onNaviga
               <IconTrophy size={20} />
             </div>
             <div className="quick-nav-text">
-              <strong>Games Timeline</strong>
-              <span>5 rounds & shot forfeits</span>
+              <strong>Tournament Games</strong>
+              <span>5 party rounds & standings</span>
             </div>
           </div>
 

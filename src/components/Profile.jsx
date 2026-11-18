@@ -5,7 +5,7 @@ import SocialButtons from './SocialButtons'
 import TeamModal from './TeamModal'
 import { IconBack, IconChat, IconTeams, IconShot } from './Icons'
 
-export default function Profile({ playerId, viewerId, onBack, onMessage, onJoin, teamsState }) {
+export default function Profile({ playerId, viewerId, onBack, onJoin, teamsState }) {
   const { ranked, loaded } = useStandings()
   const [showTeamModal, setShowTeamModal] = useState(false)
   const [modalFocusTeamId, setModalFocusTeamId] = useState(null)
@@ -131,25 +131,21 @@ export default function Profile({ playerId, viewerId, onBack, onMessage, onJoin,
             <SocialButtons player={player} />
 
             <div className="profile-cta">
-              {isMe && (
+              {isMe ? (
                 <div className="this-is-you">
                   THIS IS YOUR PROFILE
                 </div>
-              )}
-              {!isMe && viewerId && (
-                <button
-                  type="button"
+              ) : player.instagram ? (
+                <a
+                  href={`https://www.instagram.com/${player.instagram.replace(/^@+/, '')}/?hl=en`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="btn-luxury-gold"
-                  onClick={() => onMessage(player.id)}
+                  style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
                 >
-                  <IconChat size={18} /> Message {player.name}
-                </button>
-              )}
-              {!viewerId && (
-                <button type="button" className="btn-luxury-gold" onClick={onJoin}>
-                  JOIN SESHMAS TO MESSAGE
-                </button>
-              )}
+                  FOLLOW ON INSTAGRAM →
+                </a>
+              ) : null}
             </div>
           </div>
         )}

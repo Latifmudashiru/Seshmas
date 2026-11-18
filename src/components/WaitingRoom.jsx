@@ -61,10 +61,12 @@ export default function WaitingRoom({ onReady, guestName }) {
         <span className="waiting-brand-presents">PGLA PRESENTS</span>
         <h1 className="waiting-event-title">SeshMas</h1>
 
-        <div className="waiting-guest-badge">
-          <span className="badge-bullet" />
-          <span className="badge-name">{guestName}</span>
-        </div>
+        {guestName && (
+          <div className="waiting-guest-integrated">
+            <span className="guest-prefix">VIP PASS ·</span>
+            <span className="guest-name-text">{guestName}</span>
+          </div>
+        )}
 
         {/* Dynamic Reception Notice */}
         <div className="waiting-notice-container">
